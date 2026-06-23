@@ -379,12 +379,12 @@
               <p class="mt-1 text-xs text-ink-500">First 2 Zaps included, then $300 per Zap</p>
             </div>
             <div class="rounded-2xl bg-brand-50 border border-brand-100 p-5">
-              <p class="text-sm font-medium text-brand-700">You save in year one</p>
-              <p class="mt-1 text-2xl font-extrabold text-brand-600" id="outSave1">$2,088</p>
+              <p class="text-sm font-medium text-brand-700">Migration pays for itself in</p>
+              <p class="mt-1 text-2xl font-extrabold text-brand-600"><span id="outPayback">13</span> <span class="text-sm font-medium text-brand-700">months</span></p>
             </div>
             <div class="rounded-2xl bg-brand-600 p-5 sm:col-span-2">
-              <p class="text-sm font-medium text-brand-50">You save over 3 years</p>
-              <p class="mt-1 text-3xl sm:text-4xl font-extrabold text-white" id="outSave3">$9,264</p>
+              <p class="text-sm font-medium text-brand-50">Then you save every year after that</p>
+              <p class="mt-1 text-3xl sm:text-4xl font-extrabold text-white"><span id="outAnnual">$3,588</span> <span class="text-base font-medium text-brand-50">/ year</span></p>
             </div>
           </div>
 
@@ -864,8 +864,8 @@
     var outMonthly = document.getElementById('outMonthly');
     var outYearly = document.getElementById('outYearly');
     var outFee = document.getElementById('outFee');
-    var outSave1 = document.getElementById('outSave1');
-    var outSave3 = document.getElementById('outSave3');
+    var outPayback = document.getElementById('outPayback');
+    var outAnnual = document.getElementById('outAnnual');
 
     // USD formatter with commas, no cents.
     var usd = new Intl.NumberFormat('en-US', {
@@ -894,16 +894,17 @@
       var zaps = parseInt(zapsRange.value, 10) || 0;
       var yearly = monthly * 12;
       var fee = estimateMigrationFee(zaps);
-      var save1 = yearly - fee;          // year-one savings (can be negative at low spend / many zaps)
-      var save3 = (yearly * 3) - fee;    // three-year savings
+      // One-time fee vs recurring savings: show how fast it pays back, then the
+      // full annual bill you eliminate every year afterward (always positive).
+      var paybackMonths = monthly > 0 ? Math.ceil(fee / monthly) : 0;
 
       spendDisplay.textContent = usd.format(monthly);
       zapsDisplay.textContent = zaps >= 50 ? '50+' : String(zaps);
       outMonthly.textContent = usd.format(monthly);
       outYearly.textContent = usd.format(yearly);
       outFee.textContent = usd.format(fee);
-      outSave1.textContent = usd.format(save1);
-      outSave3.textContent = usd.format(save3);
+      outPayback.textContent = paybackMonths;
+      outAnnual.textContent = usd.format(yearly);
 
       paintRange(range);
       paintRange(zapsRange);
