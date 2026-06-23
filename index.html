@@ -1183,15 +1183,40 @@
       }
     });
 
+    // --- Meta event helpers (shared between browser pixel + server CAPI) ---
+    function newEventId() {
+      if (window.crypto && crypto.randomUUID) { return crypto.randomUUID(); }
+      return 'lead-' + Date.now() + '-' + Math.random().toString(16).slice(2);
+    }
+    function getCookie(name) {
+      var m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+      return m ? decodeURIComponent(m[1]) : '';
+    }
+    function getFbc() {
+      var existing = getCookie('_fbc');
+      if (existing) { return existing; }
+      var fbclid = new URLSearchParams(window.location.search).get('fbclid');
+      return fbclid ? ('fb.1.' + Date.now() + '.' + fbclid) : '';
+    }
+
     // Qualified lead: send to the CRM and show the prefilled booking calendar.
     function completeSubmission() {
       var payload = buildPayload('Yes');
+
+      // Shared event id so the browser Pixel + server-side CAPI Lead dedupe in Meta.
+      var eventId = newEventId();
+      payload.eventId   = eventId;
+      payload.fbp       = getCookie('_fbp');   // Meta browser cookie (match quality)
+      payload.fbc       = getFbc();            // _fbc cookie or derived from fbclid
+      payload.sourceUrl = window.location.href;
+
       postLead(payload);
 
       // Fire the Meta Pixel Lead conversion — only here, on a genuinely
       // successful qualified submission (after OTP verification). Never on
       // page load, validation errors, or the under-$100 disqualified path.
-      if (window.fbq) { fbq('track', 'Lead'); }
+      // eventID matches the server CAPI event so Meta counts it once.
+      if (window.fbq) { fbq('track', 'Lead', {}, { eventID: eventId }); }
 
       // Show success state + the prefilled booking calendar.
       form.classList.add('hidden');

@@ -133,20 +133,96 @@ async function handleLead(request, env) {
   } catch {
     return json({ success: false, error: "Invalid JSON body" }, 400);
   }
+
+  // Server-side Meta Conversions API Lead, for QUALIFIED leads only, sharing
+  // the browser pixel's event_id so Meta dedupes the two. Best-effort: it runs
+  // concurrently with the GHL forward and never blocks or fails the response.
+  // Inert until META_PIXEL_ID + META_CAPI_TOKEN are set on the worker.
+  const capi = body && body.qualified === "Yes"
+    ? sendCapiLead(env, request, body)
+    : Promise.resolve();
+
+  let forwardOk = false;
   try {
     const res = await fetch(env.GHL_WEBHOOK_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
-    if (!res.ok) {
-      console.error("GHL lead forward failed", res.status);
-      return json({ success: false, error: "Lead forward failed" }, 502);
-    }
-    return json({ success: true });
+    forwardOk = res.ok;
+    if (!res.ok) console.error("GHL lead forward failed", res.status);
   } catch (err) {
     console.error("GHL lead forward error", err);
-    return json({ success: false, error: "Lead forward error" }, 502);
+  }
+
+  await capi; // sendCapiLead logs its own errors and never throws
+
+  return forwardOk
+    ? json({ success: true })
+    : json({ success: false, error: "Lead forward failed" }, 502);
+}
+
+// Meta Graph API version used for the Conversions API. Bump if it gets deprecated.
+const META_API_VERSION = "v21.0";
+
+// Normalize a US phone for Meta hashing: digits only, with country code, no "+".
+function metaPhone(p) {
+  const d = String(p || "").replace(/\D/g, "");
+  if (d.length === 10) return "1" + d;
+  if (d.length === 11 && d[0] === "1") return d;
+  return d;
+}
+
+// SHA-256 hex of a string (Meta requires PII in user_data to be SHA-256 hashed).
+async function sha256Hex(str) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+/**
+ * Send a server-side "Lead" event to the Meta Conversions API.
+ * PII is normalized + SHA-256 hashed. Shares event_id with the browser pixel
+ * for deduplication. Never throws (logs and returns on any error).
+ */
+async function sendCapiLead(env, request, body) {
+  if (!env.META_PIXEL_ID || !env.META_CAPI_TOKEN) return; // not configured -> no-op
+  try {
+    const userData = {};
+    if (body.email)     userData.em = [await sha256Hex(String(body.email).trim().toLowerCase())];
+    const phone = metaPhone(body.phone);
+    if (phone)          userData.ph = [await sha256Hex(phone)];
+    if (body.firstName) userData.fn = [await sha256Hex(String(body.firstName).trim().toLowerCase())];
+    if (body.lastName)  userData.ln = [await sha256Hex(String(body.lastName).trim().toLowerCase())];
+
+    const ip = request.headers.get("CF-Connecting-IP");
+    const ua = request.headers.get("User-Agent");
+    if (ip) userData.client_ip_address = ip;
+    if (ua) userData.client_user_agent = ua;
+    if (body.fbp) userData.fbp = body.fbp;   // _fbp cookie (browser pixel)
+    if (body.fbc) userData.fbc = body.fbc;   // _fbc cookie / derived from fbclid
+
+    const event = {
+      event_name: "Lead",
+      event_time: Math.floor(Date.now() / 1000),
+      action_source: "website",
+      event_id: body.eventId || undefined,                                   // dedup with browser pixel
+      event_source_url: body.sourceUrl || request.headers.get("Referer") || undefined,
+      user_data: userData,
+    };
+    const payload = { data: [event] };
+    if (env.META_TEST_EVENT_CODE) payload.test_event_code = env.META_TEST_EVENT_CODE; // optional, for Test Events
+
+    const url = `https://graph.facebook.com/${META_API_VERSION}/${env.META_PIXEL_ID}/events?access_token=${encodeURIComponent(env.META_CAPI_TOKEN)}`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      console.error("Meta CAPI Lead failed", res.status, await res.text().catch(() => ""));
+    }
+  } catch (err) {
+    console.error("Meta CAPI Lead error", err);
   }
 }
 
