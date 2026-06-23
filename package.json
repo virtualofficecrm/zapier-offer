@@ -5,7 +5,8 @@
   "description": "Zapier migration landing page (Virtual Office AI)",
   "scripts": {
     "build": "tailwindcss -i ./src/input.css -o ./dist/styles.css --minify",
-    "watch": "tailwindcss -i ./src/input.css -o ./dist/styles.css --watch"
+    "watch": "tailwindcss -i ./src/input.css -o ./dist/styles.css --watch",
+    "deploy": "bash deploy.sh"
   },
   "devDependencies": {
     "tailwindcss": "^3.4.0"
