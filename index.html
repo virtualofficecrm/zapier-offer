@@ -6,6 +6,23 @@
   <title>Virtual Office AI — Stop Paying Zapier Every Month. We'll Migrate Your Zaps.</title>
   <meta name="description" content="Most businesses spend $200 to $800/month on Zapier. We rebuild your automations on a free, open-source platform for a one-time fee. You own it forever." />
 
+  <!-- Meta Pixel -->
+  <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1482274810377064');
+    fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1482274810377064&ev=PageView&noscript=1"/></noscript>
+  <!-- End Meta Pixel -->
+
   <!-- ============ FONTS ============ -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -1170,6 +1187,11 @@
     function completeSubmission() {
       var payload = buildPayload('Yes');
       postLead(payload);
+
+      // Fire the Meta Pixel Lead conversion — only here, on a genuinely
+      // successful qualified submission (after OTP verification). Never on
+      // page load, validation errors, or the under-$100 disqualified path.
+      if (window.fbq) { fbq('track', 'Lead'); }
 
       // Show success state + the prefilled booking calendar.
       form.classList.add('hidden');
