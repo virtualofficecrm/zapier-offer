@@ -346,21 +346,21 @@
             <label for="zapsRange" class="text-base font-semibold text-ink-900">
               How many Zaps / automations do you run?
             </label>
-            <span id="zapsDisplay" class="text-2xl sm:text-3xl font-extrabold text-brand-600">8</span>
+            <span id="zapsDisplay" class="text-2xl sm:text-3xl font-extrabold text-brand-600">3</span>
           </div>
           <input
             id="zapsRange"
             type="range"
             min="1"
-            max="50"
+            max="5"
             step="1"
-            value="8"
+            value="3"
             class="brand-range mt-5 w-full"
             aria-describedby="zapsHint"
           />
           <div id="zapsHint" class="mt-2 flex justify-between text-xs text-ink-500">
             <span>1</span>
-            <span>50+</span>
+            <span>5+</span>
           </div>
 
           <!-- Outputs grid -->
@@ -899,7 +899,7 @@
       var paybackMonths = monthly > 0 ? Math.ceil(fee / monthly) : 0;
 
       spendDisplay.textContent = usd.format(monthly);
-      zapsDisplay.textContent = zaps >= 50 ? '50+' : String(zaps);
+      zapsDisplay.textContent = zaps >= 5 ? '5+' : String(zaps);
       outMonthly.textContent = usd.format(monthly);
       outYearly.textContent = usd.format(yearly);
       outFee.textContent = usd.format(fee);
