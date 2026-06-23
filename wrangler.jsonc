@@ -1,0 +1,22 @@
+{
+  // Dedicated phone-verification worker for the Zapier landing page.
+  // Deploy with:  wrangler deploy
+  "name": "zapier",
+  "main": "otp-worker.js",
+  "compatibility_date": "2026-06-01",
+  "workers_dev": true,
+
+  // Twilio Verify Service SID (not secret on its own — useless without the
+  // Account SID + Auth Token, which stay as `wrangler secret put`).
+  "vars": {
+    "TWILIO_VERIFY_SID": "VA7ec6fe6ad62c3e764649e1e3dbbf2451",
+    "GHL_WEBHOOK_URL": "https://services.leadconnectorhq.com/hooks/BERHSQxYZiY2K2G7TJwC/webhook-trigger/2b09fdec-c9e7-4c1e-b6ba-7ddd3b495667"
+  }
+
+  // Optional: bind a KV namespace to enable rate limiting (protects the Twilio bill).
+  // 1) Create it:   wrangler kv namespace create RL_KV
+  // 2) Paste the returned id below and uncomment:
+  // ,"kv_namespaces": [
+  //   { "binding": "RL_KV", "id": "PASTE_KV_NAMESPACE_ID_HERE" }
+  // ]
+}

@@ -1,0 +1,13 @@
+# Build / deploy artifacts (regenerated from the root HTML files)
+public/
+
+# Wrangler
+.wrangler/
+wrangler-*.log
+
+# Dependencies
+node_modules/
+
+# OS / editor
+.DS_Store
+.vscode/

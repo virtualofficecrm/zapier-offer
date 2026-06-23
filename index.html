@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Virtual Office AI — Stop Paying Zapier Every Month. We'll Migrate Your Zaps.</title>
+  <meta name="description" content="Most businesses spend $200 to $800/month on Zapier. We rebuild your automations on a free, open-source platform for a one-time fee. You own it forever." />
+
+  <!-- ============ FONTS ============ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- ============ CLOUDFLARE TURNSTILE (bot protection for OTP send) ============ -->
+  <!-- Required by the verification worker. The site key below is public/safe to expose. -->
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+  <!-- ============ TAILWIND CDN ============ -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Small inline Tailwind config for custom brand colors + font.
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            // Neutral dark slate base for text
+            ink: {
+              50:  '#f8fafc',
+              100: '#f1f5f9',
+              200: '#e2e8f0',
+              500: '#64748b',
+              700: '#334155',
+              900: '#0f172a',
+            },
+            // Positive / savings tone
+            brand: {
+              50:  '#ecfdf5',
+              100: '#d1fae5',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+            },
+            // Danger / Zapier-pain tone
+            warn: {
+              50:  '#fef2f2',
+              100: '#fee2e2',
+              500: '#ef4444',
+              600: '#dc2626',
+              700: '#b91c1c',
+            },
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- ============ TINY INLINE STYLES (reveal animation + range slider) ============ -->
+  <style>
+    /* Section reveal animation, disabled when user prefers reduced motion */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+      will-change: opacity, transform;
+    }
+    .reveal.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+    }
+
+    /* Custom range slider styling for the calculator */
+    input[type="range"].brand-range {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 8px;
+      border-radius: 9999px;
+      background: #e2e8f0;
+      outline: none;
+    }
+    input[type="range"].brand-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 9999px;
+      background: #059669;
+      border: 4px solid #ffffff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      cursor: pointer;
+    }
+    input[type="range"].brand-range::-moz-range-thumb {
+      width: 28px;
+      height: 28px;
+      border-radius: 9999px;
+      background: #059669;
+      border: 4px solid #ffffff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body class="font-sans text-ink-900 bg-white antialiased">
+
+  <!-- ============================================================= -->
+  <!-- 1. STICKY NAV                                                 -->
+  <!-- ============================================================= -->
+  <header id="nav" class="fixed top-0 inset-x-0 z-50 bg-white/90 backdrop-blur transition-shadow duration-300">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between" aria-label="Primary">
+      <a href="#top" class="flex items-center" aria-label="Virtual Office AI home">
+        <!-- Brand logo (hosted on vofficeai.com) -->
+        <img src="https://vibe.filesafe.space/1776385047214871557/assets/9b043093-42b8-44a8-a402-a4917fded9e5.png"
+             alt="Virtual Office AI" width="500" height="100"
+             class="h-8 sm:h-9 w-auto" />
+      </a>
+      <a href="#audit-form"
+         class="inline-flex items-center justify-center rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-600 transition-colors">
+        Get Your Free Audit
+      </a>
+    </nav>
+  </header>
+
+  <main id="top">
+
+    <!-- ============================================================= -->
+    <!-- 2. HERO                                                       -->
+    <!-- ============================================================= -->
+    <section class="relative overflow-hidden bg-gradient-to-b from-ink-50 to-white pt-28 pb-20 sm:pt-32 sm:pb-28">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center reveal">
+        <!-- Migration visual: Zapier (orange brand mark) → free platform -->
+        <div class="flex items-center justify-center gap-3 sm:gap-4 mb-6" aria-hidden="false">
+          <svg role="img" aria-label="Zapier" viewBox="0 0 24 24" class="h-10 w-10" fill="#FF4F00" xmlns="http://www.w3.org/2000/svg">
+            <title>Zapier</title>
+            <path d="M4.157 0A4.151 4.151 0 0 0 0 4.161v15.678A4.151 4.151 0 0 0 4.157 24h15.682A4.152 4.152 0 0 0 24 19.839V4.161A4.152 4.152 0 0 0 19.839 0H4.157Zm10.61 8.761h.03a.577.577 0 0 1 .23.038.585.585 0 0 1 .201.124.63.63 0 0 1 .162.431.612.612 0 0 1-.162.435.58.58 0 0 1-.201.128.58.58 0 0 1-.23.042.529.529 0 0 1-.235-.042.585.585 0 0 1-.332-.328.559.559 0 0 1-.038-.235.613.613 0 0 1 .17-.431.59.59 0 0 1 .405-.162Zm2.853 1.572c.03.004.061.004.095.004.325-.011.646.064.937.219.238.144.431.355.552.609.128.279.189.582.185.888v.193a2 2 0 0 1 0 .219h-2.498c.003.227.075.45.204.642a.78.78 0 0 0 .646.265.714.714 0 0 0 .484-.136.642.642 0 0 0 .23-.318l.915.257a1.398 1.398 0 0 1-.28.537c-.14.159-.321.284-.521.355a2.234 2.234 0 0 1-.836.136 1.923 1.923 0 0 1-1.001-.245 1.618 1.618 0 0 1-.665-.703 2.221 2.221 0 0 1-.227-1.036 1.95 1.95 0 0 1 .48-1.398 1.9 1.9 0 0 1 1.3-.488Zm-9.607.023c.162.004.325.026.48.079.207.065.4.174.563.314.26.302.393.692.366 1.088v2.276H8.53l-.109-.711h-.065c-.064.163-.155.31-.272.439a1.122 1.122 0 0 1-.374.264 1.023 1.023 0 0 1-.453.083 1.334 1.334 0 0 1-.866-.264.965.965 0 0 1-.329-.801.993.993 0 0 1 .076-.431 1.02 1.02 0 0 1 .242-.363 1.478 1.478 0 0 1 1.043-.303h.952v-.181a.696.696 0 0 0-.136-.454.553.553 0 0 0-.438-.154.695.695 0 0 0-.378.086.48.48 0 0 0-.193.254l-.99-.144a1.26 1.26 0 0 1 .257-.563c.14-.174.321-.302.533-.378.261-.091.54-.136.82-.129.053-.003.106-.007.163-.007Zm4.384.007c.174 0 .347.038.506.114.182.083.34.211.458.374.257.423.377.911.351 1.406a2.53 2.53 0 0 1-.355 1.448 1.148 1.148 0 0 1-1.009.517c-.204 0-.401-.045-.582-.136a1.052 1.052 0 0 1-.48-.457 1.298 1.298 0 0 1-.114-.234h-.045l.004 1.784h-1.059v-4.713h.904l.117.805h.057c.068-.208.177-.401.328-.56a1.129 1.129 0 0 1 .843-.344h.076v-.004Zm7.559.084h.903l.113.805h.053a1.37 1.37 0 0 1 .235-.484.813.813 0 0 1 .313-.242.82.82 0 0 1 .39-.076h.234v1.051h-.401a.662.662 0 0 0-.313.008.623.623 0 0 0-.272.155.663.663 0 0 0-.174.26.683.683 0 0 0-.027.314v1.875h-1.054v-3.666Zm-17.515.003h3.262v.896L3.73 13.104l.034.113h1.973l.042.9H2.4v-.9l1.931-1.754-.045-.117H2.441v-.896Zm11.815 0h1.055v3.659h-1.055V10.45Zm3.443.684.019.016a.69.69 0 0 0-.351.045.756.756 0 0 0-.287.204c-.11.155-.174.336-.189.522h1.545c-.034-.526-.257-.787-.74-.787h.003Zm-5.718.163c-.026 0-.057 0-.083.004a.78.78 0 0 0-.31.053.746.746 0 0 0-.257.189 1.016 1.016 0 0 0-.204.695v.064c-.015.257.057.507.204.711a.634.634 0 0 0 .253.196.638.638 0 0 0 .314.061.644.644 0 0 0 .578-.265c.14-.223.204-.48.189-.74a1.216 1.216 0 0 0-.181-.711.677.677 0 0 0-.503-.257Zm-4.509 1.266a.464.464 0 0 0-.268.102.373.373 0 0 0-.114.276c0 .053.008.106.027.155a.375.375 0 0 0 .087.132.576.576 0 0 0 .397.11v.004a.863.863 0 0 0 .563-.182.573.573 0 0 0 .211-.457v-.14h-.903Z"/>
+          </svg>
+          <svg class="h-5 w-5 text-ink-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+          <span class="inline-flex items-center rounded-lg bg-brand-100 text-brand-700 px-3 py-1.5 text-sm font-bold">Free Platform</span>
+        </div>
+
+        <p class="inline-block rounded-full bg-warn-100 text-warn-700 px-4 py-1.5 text-xs sm:text-sm font-semibold uppercase tracking-wide">
+          Stop overpaying for automation
+        </p>
+        <h1 class="mt-6 text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1]">
+          Stop Paying Zapier Every Month. <span class="text-brand-600">We'll Migrate Your Zaps So You Own Them.</span>
+        </h1>
+        <p class="mt-6 text-lg sm:text-xl text-ink-700 leading-relaxed max-w-3xl mx-auto">
+          Most businesses using Zapier spend $200 to $800/month just to keep their apps talking to each other. We rebuild your automations on a free, open-source platform, you pay once and own it forever.
+        </p>
+        <div class="mt-8 flex justify-center">
+          <a href="#audit-form"
+             class="inline-flex items-center justify-center rounded-xl bg-brand-600 px-8 py-4 text-base sm:text-lg font-bold text-white shadow-lg shadow-brand-600/20 hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-600 transition-all hover:-translate-y-0.5">
+            Get Your Free Audit
+          </a>
+        </div>
+
+        <!-- Trust badges -->
+        <div class="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
+          <div class="flex items-center justify-center gap-2 rounded-xl bg-white border border-ink-200 px-4 py-3 shadow-sm">
+            <svg class="h-5 w-5 text-brand-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            <span class="text-sm font-semibold text-ink-900">Free Platform</span>
+          </div>
+          <div class="flex items-center justify-center gap-2 rounded-xl bg-white border border-ink-200 px-4 py-3 shadow-sm">
+            <svg class="h-5 w-5 text-brand-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            <span class="text-sm font-semibold text-ink-900">One-Time Fee</span>
+          </div>
+          <div class="flex items-center justify-center gap-2 rounded-xl bg-white border border-ink-200 px-4 py-3 shadow-sm">
+            <svg class="h-5 w-5 text-brand-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            <span class="text-sm font-semibold text-ink-900">Zero Monthly Task Charges</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================= -->
+    <!-- 3. PAIN SECTION — "The Task Tax"                              -->
+    <!-- ============================================================= -->
+    <section class="bg-warn-50 py-20 sm:py-24 border-y border-warn-100">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto text-center reveal">
+          <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-ink-900">
+            Zapier Is Quietly Draining Your Budget
+          </h2>
+          <p class="mt-4 text-lg text-ink-700 leading-relaxed">
+            Every trigger. Every action. Every Zap. Zapier charges for all of it, and those tasks add up fast. What starts as a $20/month tool becomes a $300, $500, even $800/month recurring expense for growing businesses.
+          </p>
+        </div>
+
+        <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 reveal">
+          <!-- Card -->
+          <div class="rounded-2xl bg-white border border-warn-100 p-6 shadow-sm">
+            <div class="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-warn-100 text-warn-600 mb-4">
+              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <h3 class="text-lg font-bold text-ink-900">The Task Tax</h3>
+            <p class="mt-2 text-ink-700 leading-relaxed">You're not paying for software. You're paying a tax every time your apps communicate with each other.</p>
+          </div>
+          <!-- Card -->
+          <div class="rounded-2xl bg-white border border-warn-100 p-6 shadow-sm">
+            <div class="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-warn-100 text-warn-600 mb-4">
+              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+            </div>
+            <h3 class="text-lg font-bold text-ink-900">Punished for Scaling</h3>
+            <p class="mt-2 text-ink-700 leading-relaxed">The more successful your business becomes, the more leads you get, the higher your Zapier bill climbs.</p>
+          </div>
+          <!-- Card -->
+          <div class="rounded-2xl bg-white border border-warn-100 p-6 shadow-sm">
+            <div class="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-warn-100 text-warn-600 mb-4">
+              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+            </div>
+            <h3 class="text-lg font-bold text-ink-900">Hidden Complexity</h3>
+            <p class="mt-2 text-ink-700 leading-relaxed">Multi-step Zaps burn through your task allowance exponentially faster, forcing you into expensive enterprise tiers.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================= -->
+    <!-- 4. SOLUTION / HOW IT WORKS                                    -->
+    <!-- ============================================================= -->
+    <section class="bg-white py-20 sm:py-24">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto text-center reveal">
+          <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-ink-900">
+            We Convert Your Zaps to a Free Platform. You Pay Once.
+          </h2>
+          <p class="mt-4 text-lg text-ink-700 leading-relaxed">
+            Our team analyzes your existing Zapier workflows and rebuilds them on a powerful, enterprise-grade automation platform with zero per-task fees. Same functionality. Same reliability. Zero monthly task charges. You pay a one-time build fee, and then it's yours, forever.
+          </p>
+        </div>
+
+        <div class="mt-14 grid grid-cols-1 md:grid-cols-3 gap-6 reveal">
+          <!-- Step 1 -->
+          <div class="relative rounded-2xl bg-ink-50 p-8 border border-ink-200">
+            <span class="absolute -top-4 left-8 inline-flex h-10 w-10 items-center justify-center rounded-full bg-brand-600 text-white font-black text-lg shadow-lg">1</span>
+            <h3 class="mt-4 text-xl font-bold text-ink-900">Audit</h3>
+            <p class="mt-2 text-ink-700 leading-relaxed">We review all your current Zapier Zaps to map out the exact logic and data flow.</p>
+          </div>
+          <!-- Step 2 -->
+          <div class="relative rounded-2xl bg-ink-50 p-8 border border-ink-200">
+            <span class="absolute -top-4 left-8 inline-flex h-10 w-10 items-center justify-center rounded-full bg-brand-600 text-white font-black text-lg shadow-lg">2</span>
+            <h3 class="mt-4 text-xl font-bold text-ink-900">Build</h3>
+            <p class="mt-2 text-ink-700 leading-relaxed">We rebuild them on our custom intermediary software configuration with zero per-task fees.</p>
+          </div>
+          <!-- Step 3 -->
+          <div class="relative rounded-2xl bg-ink-50 p-8 border border-ink-200">
+            <span class="absolute -top-4 left-8 inline-flex h-10 w-10 items-center justify-center rounded-full bg-brand-600 text-white font-black text-lg shadow-lg">3</span>
+            <h3 class="mt-4 text-xl font-bold text-ink-900">Launch</h3>
+            <p class="mt-2 text-ink-700 leading-relaxed">You go live with $0/month in task costs and complete ownership of your workflows.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================= -->
+    <!-- 5. INDUSTRY STACKS                                            -->
+    <!-- ============================================================= -->
+    <section class="bg-ink-50 py-20 sm:py-24 border-y border-ink-200">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto text-center reveal">
+          <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-ink-900">
+            Perfect For Businesses Running These Stacks
+          </h2>
+          <p class="mt-4 text-lg text-ink-700 leading-relaxed">
+            If your business runs any of these tools, you're almost certainly overpaying for Zapier.
+          </p>
+        </div>
+
+        <div class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 reveal">
+          <!-- Each stack card -->
+          <div class="rounded-2xl bg-white border border-ink-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+            <h3 class="text-lg font-bold text-brand-700">Real Estate</h3>
+            <p class="mt-2 text-ink-700">Follow Up Boss + DocuSign + Gmail + Zillow</p>
+          </div>
+          <div class="rounded-2xl bg-white border border-ink-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+            <h3 class="text-lg font-bold text-brand-700">Insurance Agencies</h3>
+            <p class="mt-2 text-ink-700">AgencyZoom + Calendly + Typeform + Slack</p>
+          </div>
+          <div class="rounded-2xl bg-white border border-ink-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+            <h3 class="text-lg font-bold text-brand-700">E-Commerce</h3>
+            <p class="mt-2 text-ink-700">Shopify + Klaviyo + Google Sheets + Slack</p>
+          </div>
+          <div class="rounded-2xl bg-white border border-ink-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+            <h3 class="text-lg font-bold text-brand-700">Marketing Agencies</h3>
+            <p class="mt-2 text-ink-700">HubSpot + Asana + Slack + Typeform</p>
+          </div>
+          <div class="rounded-2xl bg-white border border-ink-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+            <h3 class="text-lg font-bold text-brand-700">Healthcare / Med Spa</h3>
+            <p class="mt-2 text-ink-700">Jane App + Mailchimp + Google Calendar + Twilio</p>
+          </div>
+          <div class="rounded-2xl bg-white border border-ink-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+            <h3 class="text-lg font-bold text-brand-700">Mortgage / Finance</h3>
+            <p class="mt-2 text-ink-700">Encompass + Gmail + DocuSign + Calendly</p>
+          </div>
+          <div class="rounded-2xl bg-white border border-ink-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+            <h3 class="text-lg font-bold text-brand-700">SaaS Companies</h3>
+            <p class="mt-2 text-ink-700">Intercom + HubSpot + Stripe + Notion</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================= -->
+    <!-- 6. INTERACTIVE SAVINGS CALCULATOR                             -->
+    <!-- ============================================================= -->
+    <section class="bg-white py-20 sm:py-24">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto text-center reveal">
+          <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-ink-900">
+            How Much Are You Overpaying?
+          </h2>
+          <p class="mt-4 text-lg text-ink-700">Drag the slider to your current Zapier spend and see your savings.</p>
+        </div>
+
+        <!-- Calculator card -->
+        <div class="mt-12 rounded-3xl bg-ink-50 border border-ink-200 p-6 sm:p-10 shadow-sm reveal">
+          <div class="flex items-baseline justify-between gap-4">
+            <label for="spendRange" class="text-base font-semibold text-ink-900">
+              Your current Zapier spend per month
+            </label>
+            <span id="spendDisplay" class="text-2xl sm:text-3xl font-extrabold text-brand-600">$299</span>
+          </div>
+          <input
+            id="spendRange"
+            type="range"
+            min="200"
+            max="1000"
+            step="1"
+            value="299"
+            class="brand-range mt-5 w-full"
+            aria-describedby="spendHint"
+          />
+          <div id="spendHint" class="mt-2 flex justify-between text-xs text-ink-500">
+            <span>$200</span>
+            <span>$1,000</span>
+          </div>
+
+          <!-- Number of Zaps -->
+          <div class="mt-8 flex items-baseline justify-between gap-4">
+            <label for="zapsRange" class="text-base font-semibold text-ink-900">
+              How many Zaps / automations do you run?
+            </label>
+            <span id="zapsDisplay" class="text-2xl sm:text-3xl font-extrabold text-brand-600">8</span>
+          </div>
+          <input
+            id="zapsRange"
+            type="range"
+            min="1"
+            max="50"
+            step="1"
+            value="8"
+            class="brand-range mt-5 w-full"
+            aria-describedby="zapsHint"
+          />
+          <div id="zapsHint" class="mt-2 flex justify-between text-xs text-ink-500">
+            <span>1</span>
+            <span>50+</span>
+          </div>
+
+          <!-- Outputs grid -->
+          <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="rounded-2xl bg-white border border-warn-100 p-5">
+              <p class="text-sm font-medium text-ink-500">You pay Zapier</p>
+              <p class="mt-1 text-2xl font-extrabold text-warn-600"><span id="outMonthly">$299</span> <span class="text-sm font-medium text-ink-500">/ month</span></p>
+            </div>
+            <div class="rounded-2xl bg-white border border-warn-100 p-5">
+              <p class="text-sm font-medium text-ink-500">That's per year</p>
+              <p class="mt-1 text-2xl font-extrabold text-warn-600"><span id="outYearly">$3,588</span> <span class="text-sm font-medium text-ink-500">/ year</span></p>
+            </div>
+            <div class="rounded-2xl bg-white border border-ink-200 p-5">
+              <p class="text-sm font-medium text-ink-500">Estimated one-time migration fee <span class="text-ink-500 font-normal">(estimate)</span></p>
+              <p class="mt-1 text-2xl font-extrabold text-ink-900" id="outFee">$3,300</p>
+              <p class="mt-1 text-xs text-ink-500">First 2 Zaps included, then $300 per Zap</p>
+            </div>
+            <div class="rounded-2xl bg-brand-50 border border-brand-100 p-5">
+              <p class="text-sm font-medium text-brand-700">You save in year one</p>
+              <p class="mt-1 text-2xl font-extrabold text-brand-600" id="outSave1">$2,088</p>
+            </div>
+            <div class="rounded-2xl bg-brand-600 p-5 sm:col-span-2">
+              <p class="text-sm font-medium text-brand-50">You save over 3 years</p>
+              <p class="mt-1 text-3xl sm:text-4xl font-extrabold text-white" id="outSave3">$9,264</p>
+            </div>
+          </div>
+
+          <p class="mt-4 text-xs text-ink-500 text-center">
+            Figures are estimates. Your exact migration fee depends on the number and complexity of your Zaps. Get a free audit for a precise quote.
+          </p>
+
+          <div class="mt-8 flex justify-center">
+            <a href="#audit-form"
+               class="inline-flex items-center justify-center rounded-xl bg-brand-600 px-8 py-4 text-base font-bold text-white shadow-lg shadow-brand-600/20 hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-600 transition-all hover:-translate-y-0.5">
+              Get Your Free Audit
+            </a>
+          </div>
+        </div>
+
+        <!-- Supporting context stat cards -->
+        <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-5 reveal">
+          <div class="rounded-2xl bg-white border border-ink-200 p-6 shadow-sm">
+            <p class="text-ink-700 leading-relaxed">Businesses running <span class="font-bold text-ink-900">50,000 tasks/month</span> on Zapier's Professional plan pay <span class="font-bold text-warn-600">$299/month</span>.</p>
+          </div>
+          <div class="rounded-2xl bg-white border border-ink-200 p-6 shadow-sm">
+            <p class="text-ink-700 leading-relaxed"><span class="font-bold text-warn-600">$3,588/year</span> just to move data between apps you already pay for separately.</p>
+          </div>
+          <div class="rounded-2xl bg-white border border-ink-200 p-6 shadow-sm">
+            <p class="text-ink-700 leading-relaxed">Average client savings after migration: <span class="font-bold text-brand-600">$2,400 to $7,200 per year</span>.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================= -->
+    <!-- 7. CREDIBILITY / ABOUT                                        -->
+    <!-- ============================================================= -->
+    <section class="bg-ink-900 text-white py-20 sm:py-24">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto text-center reveal">
+          <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight">
+            Built by the Team Behind Virtual Office AI
+          </h2>
+          <p class="mt-4 text-lg text-ink-200 leading-relaxed">
+            Virtual Office AI is a powerful automation platform helping businesses automate, scale, and grow. Our automation engineers have rebuilt hundreds of workflows across real estate, insurance, e-commerce, and professional services.
+          </p>
+        </div>
+
+        <div class="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6 reveal">
+          <div class="text-center rounded-2xl bg-white/5 border border-white/10 p-8">
+            <p class="text-4xl font-extrabold text-brand-500">500+</p>
+            <p class="mt-2 text-ink-200 font-medium">Workflows Migrated</p>
+          </div>
+          <div class="text-center rounded-2xl bg-white/5 border border-white/10 p-8">
+            <p class="text-4xl font-extrabold text-brand-500">99.9%</p>
+            <p class="mt-2 text-ink-200 font-medium">Uptime Reliability</p>
+          </div>
+          <div class="text-center rounded-2xl bg-white/5 border border-white/10 p-8">
+            <p class="text-4xl font-extrabold text-brand-500">Enterprise</p>
+            <p class="mt-2 text-ink-200 font-medium">Grade Security</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================= -->
+    <!-- 8. TESTIMONIALS + RISK REVERSAL                               -->
+    <!-- ============================================================= -->
+    <section class="bg-white py-20 sm:py-24">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto text-center reveal">
+          <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-ink-900">What Our Clients Say</h2>
+        </div>
+
+        <!-- PLACEHOLDER: replace with real testimonials -->
+        <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 reveal">
+          <!-- PLACEHOLDER: replace with real testimonials -->
+          <figure class="rounded-2xl bg-ink-50 border border-ink-200 p-6 shadow-sm">
+            <div class="flex text-brand-500" aria-hidden="true">★★★★★</div>
+            <blockquote class="mt-3 text-ink-700 leading-relaxed">"We were paying nearly $500 a month to Zapier. After the migration our task bill dropped to zero. It paid for itself in under two months."</blockquote>
+            <figcaption class="mt-4 text-sm">
+              <span class="font-bold text-ink-900">Sarah M.</span>
+              <span class="text-ink-500">— Real Estate Brokerage</span>
+            </figcaption>
+          </figure>
+          <!-- PLACEHOLDER: replace with real testimonials -->
+          <figure class="rounded-2xl bg-ink-50 border border-ink-200 p-6 shadow-sm">
+            <div class="flex text-brand-500" aria-hidden="true">★★★★★</div>
+            <blockquote class="mt-3 text-ink-700 leading-relaxed">"Same automations, same reliability, but we cut $4,000 a year off our software costs. Wish we had done this sooner."</blockquote>
+            <figcaption class="mt-4 text-sm">
+              <span class="font-bold text-ink-900">James T.</span>
+              <span class="text-ink-500">— Insurance Agency</span>
+            </figcaption>
+          </figure>
+          <!-- PLACEHOLDER: replace with real testimonials -->
+          <figure class="rounded-2xl bg-ink-50 border border-ink-200 p-6 shadow-sm">
+            <div class="flex text-brand-500" aria-hidden="true">★★★★★</div>
+            <blockquote class="mt-3 text-ink-700 leading-relaxed">"Our Shopify and Klaviyo flows were eating our task budget alive. Now we own the whole system and pay nothing monthly."</blockquote>
+            <figcaption class="mt-4 text-sm">
+              <span class="font-bold text-ink-900">Priya K.</span>
+              <span class="text-ink-500">— E-Commerce Brand</span>
+            </figcaption>
+          </figure>
+        </div>
+
+        <!-- Risk reversal banner — EDITABLE: set your real guarantee here -->
+        <div class="mt-12 rounded-3xl bg-brand-600 px-6 py-10 sm:px-10 text-center reveal">
+          <!-- EDITABLE GUARANTEE: replace with your real risk-reversal terms -->
+          <p class="text-xl sm:text-2xl font-bold text-white leading-relaxed max-w-3xl mx-auto">
+            We don't get paid until your automations run perfectly. If we can't rebuild your workflows, you pay nothing.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================= -->
+    <!-- 9. AUDIT CTA + FORM                                           -->
+    <!-- ============================================================= -->
+    <section id="audit" class="bg-ink-50 py-20 sm:py-24 border-y border-ink-200 scroll-mt-20">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto text-center reveal">
+          <!-- Value anchor -->
+          <p class="inline-flex items-center gap-2 rounded-full bg-brand-100 text-brand-700 px-4 py-1.5 text-sm font-bold mb-4">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            A $200 Value, Yours Free
+          </p>
+          <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-ink-900">
+            Get a Free Zapier Audit, See Exactly What You'll Save
+          </h2>
+          <p class="mt-4 text-lg text-ink-700 leading-relaxed">
+            Book a 15-minute call. We'll review your Zaps and give you a free migration estimate, no obligation. <span class="font-semibold text-ink-900">This audit is normally a $200 value, free for a limited time.</span>
+          </p>
+        </div>
+
+        <!-- Three mini-steps -->
+        <div class="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-5 reveal">
+          <div class="rounded-2xl bg-white border border-ink-200 p-5 text-center shadow-sm">
+            <p class="font-bold text-ink-900">Quick Discovery</p>
+            <p class="mt-1 text-sm text-ink-700">We'll discuss your current setup and pain points.</p>
+          </div>
+          <div class="rounded-2xl bg-white border border-ink-200 p-5 text-center shadow-sm">
+            <p class="font-bold text-ink-900">Workflow Audit</p>
+            <p class="mt-1 text-sm text-ink-700">We'll review your most expensive Zaps.</p>
+          </div>
+          <div class="rounded-2xl bg-white border border-ink-200 p-5 text-center shadow-sm">
+            <p class="font-bold text-ink-900">Migration Plan</p>
+            <p class="mt-1 text-sm text-ink-700">You get a clear roadmap and cost-savings analysis.</p>
+          </div>
+        </div>
+
+        <!-- The form -->
+        <div id="audit-form" class="mt-10 mx-auto max-w-2xl rounded-3xl bg-white border border-ink-200 p-6 sm:p-10 shadow-lg reveal scroll-mt-24">
+
+          <!-- Success state (hidden until submit) -->
+          <div id="formSuccess" class="hidden py-6">
+            <div class="text-center">
+              <div class="mx-auto inline-flex h-16 w-16 items-center justify-center rounded-full bg-brand-100 text-brand-600">
+                <svg class="h-9 w-9" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <h3 class="mt-5 text-2xl font-extrabold text-ink-900">You're in! Now pick a time for your free audit.</h3>
+              <p class="mt-2 text-ink-700">Choose a slot below, your details are already filled in. We'll review your Zaps live and show you exactly what you'll save.</p>
+            </div>
+            <!-- the booking booking widget (prefilled) is injected here on submit -->
+            <div id="bookingContainer" class="mt-6"></div>
+          </div>
+
+          <!-- Disqualified state: shown when current Zapier spend is under $100/mo -->
+          <div id="formDisqualified" class="hidden text-center py-10">
+            <div class="mx-auto inline-flex h-16 w-16 items-center justify-center rounded-full bg-ink-100 text-ink-500">
+              <svg class="h-9 w-9" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <h3 class="mt-5 text-2xl font-extrabold text-ink-900">Thanks, but you're probably fine on Zapier for now.</h3>
+            <p class="mt-2 text-ink-700">At under $100 a month, a migration usually won't save you enough to be worth the one-time build fee just yet. Once your Zapier bill starts climbing, come back and we'll help you cut it for good.</p>
+          </div>
+
+          <!-- The actual form (single step) -->
+          <form id="auditForm" novalidate class="space-y-5">
+            <h3 class="text-xl font-extrabold text-ink-900">Request Your Audit</h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="firstName" class="block text-sm font-semibold text-ink-900">First Name <span class="text-warn-600">*</span></label>
+                <input type="text" id="firstName" name="firstName" autocomplete="given-name" required
+                  class="mt-1.5 block w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 placeholder-ink-500 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/30" />
+                <p class="mt-1 text-sm text-warn-600 hidden" data-error-for="firstName"></p>
+              </div>
+              <div>
+                <label for="lastName" class="block text-sm font-semibold text-ink-900">Last Name <span class="text-warn-600">*</span></label>
+                <input type="text" id="lastName" name="lastName" autocomplete="family-name" required
+                  class="mt-1.5 block w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 placeholder-ink-500 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/30" />
+                <p class="mt-1 text-sm text-warn-600 hidden" data-error-for="lastName"></p>
+              </div>
+            </div>
+
+            <div>
+              <label for="email" class="block text-sm font-semibold text-ink-900">Email <span class="text-warn-600">*</span></label>
+              <input type="email" id="email" name="email" autocomplete="email" required
+                class="mt-1.5 block w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 placeholder-ink-500 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/30" />
+              <p class="mt-1 text-sm text-warn-600 hidden" data-error-for="email"></p>
+            </div>
+
+            <div>
+              <label for="phone" class="block text-sm font-semibold text-ink-900">Phone Number <span class="text-warn-600">*</span></label>
+              <input type="tel" id="phone" name="phone" autocomplete="tel" required
+                class="mt-1.5 block w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 placeholder-ink-500 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/30" />
+              <p class="mt-1 text-sm text-warn-600 hidden" data-error-for="phone"></p>
+              <!-- Shown once the number is SMS-verified -->
+              <p id="phoneVerifiedHint" class="mt-1 text-sm font-semibold text-brand-600 hidden">✓ Phone verified</p>
+            </div>
+
+            <!-- Hidden fields populated by the verification flow -->
+            <input type="hidden" id="phoneVerified" name="phoneVerified" value="false" />
+            <input type="hidden" id="verifyToken" name="verifyToken" value="" />
+
+            <div>
+              <label for="zapierSpend" class="block text-sm font-semibold text-ink-900">How much do you currently pay for Zapier? <span class="text-warn-600">*</span></label>
+              <select id="zapierSpend" name="zapierSpend" required
+                class="mt-1.5 block w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 bg-white focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/30">
+                <option value="">Select an option</option>
+                <option>Under $100 / month</option>
+                <option>$100–$300 / month</option>
+                <option>$300–$600 / month</option>
+                <option>$600+ / month</option>
+                <option>Not Sure</option>
+              </select>
+              <p class="mt-1 text-sm text-warn-600 hidden" data-error-for="zapierSpend"></p>
+            </div>
+
+            <div>
+              <label for="apps" class="block text-sm font-semibold text-ink-900">Which apps do you connect? <span class="text-warn-600">*</span></label>
+              <input type="text" id="apps" name="apps" required placeholder="e.g. HubSpot, Shopify, Slack, Gmail"
+                class="mt-1.5 block w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 placeholder-ink-500 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/30" />
+              <p class="mt-1 text-sm text-warn-600 hidden" data-error-for="apps"></p>
+            </div>
+
+            <!-- TCPA consent (REQUIRED checkbox) — above the submit button. EDITABLE: confirm links/wording. -->
+            <label class="flex gap-3 items-start text-sm text-ink-700 leading-relaxed cursor-pointer">
+              <input id="consent" type="checkbox" required
+                class="mt-0.5 h-5 w-5 shrink-0 rounded border-ink-200 text-brand-600 focus:ring-brand-600/30" />
+              <span>
+                I agree to receive calls, texts, and emails from <strong>Virtual Office AI</strong>
+                about my audit and related updates. Msg &amp; data rates may apply; message frequency
+                varies. Reply STOP to opt out, HELP for help. See our
+                <a href="privacy.html" class="font-semibold text-brand-600 hover:text-brand-700" target="_blank" rel="noopener">Privacy Policy</a>
+                and <a href="terms.html" class="font-semibold text-brand-600 hover:text-brand-700" target="_blank" rel="noopener">Terms</a>.
+              </span>
+            </label>
+            <p class="text-sm text-warn-600 hidden" data-error-for="consent"></p>
+
+            <button type="submit"
+              class="w-full inline-flex items-center justify-center rounded-xl bg-brand-600 px-6 py-3.5 text-base font-bold text-white shadow-md hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-600 transition-colors">
+              Book My Free Audit →
+            </button>
+
+            <!-- Hidden ad-attribution fields: auto-filled from the URL query string on load. -->
+            <input type="hidden" id="utm_source"   name="utm_source"   value="" />
+            <input type="hidden" id="utm_medium"   name="utm_medium"   value="" />
+            <input type="hidden" id="utm_campaign" name="utm_campaign" value="" />
+            <input type="hidden" id="utm_content"  name="utm_content"  value="" />
+            <input type="hidden" id="utm_term"     name="utm_term"     value="" />
+            <input type="hidden" id="fbclid"       name="fbclid"       value="" />
+
+            <p class="text-center text-sm text-ink-500">No obligation. We'll never share your info.</p>
+
+            <!-- Cloudflare Turnstile (bot protection) — bottom of the form. -->
+            <div class="cf-turnstile flex justify-center"
+                 data-sitekey="0x4AAAAAADpR6gAe27hfMhP9"
+                 data-callback="voTurnstileCb"
+                 data-error-callback="voTurnstileErr"
+                 data-expired-callback="voTurnstileErr"></div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================= -->
+    <!-- 10. FAQ ACCORDION                                             -->
+    <!-- ============================================================= -->
+    <section class="bg-white py-20 sm:py-24">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center reveal">
+          <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-ink-900">Frequently Asked Questions</h2>
+          <p class="mt-4 text-lg text-ink-700">Everything you need to know about migrating away from Zapier.</p>
+        </div>
+
+        <div class="mt-10 divide-y divide-ink-200 border-y border-ink-200 reveal">
+          <!-- FAQ item -->
+          <div class="faq-item">
+            <h3>
+              <button type="button" class="faq-trigger w-full flex items-center justify-between gap-4 py-5 text-left" aria-expanded="false">
+                <span class="text-lg font-semibold text-ink-900">What platform do you migrate Zaps to?</span>
+                <svg class="faq-icon h-5 w-5 text-ink-500 shrink-0 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+              </button>
+            </h3>
+            <div class="faq-panel hidden pb-5 -mt-1 text-ink-700 leading-relaxed">
+              <!-- TODO: insert the specific platform name here (e.g. n8n) -->
+              We rebuild your automations on a powerful, enterprise-grade open-source automation platform that you fully own and control. There are no per-task fees and no vendor lock-in, the workflows belong to you.
+            </div>
+          </div>
+          <!-- FAQ item -->
+          <div class="faq-item">
+            <h3>
+              <button type="button" class="faq-trigger w-full flex items-center justify-between gap-4 py-5 text-left" aria-expanded="false">
+                <span class="text-lg font-semibold text-ink-900">Will my automations work exactly the same?</span>
+                <svg class="faq-icon h-5 w-5 text-ink-500 shrink-0 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+              </button>
+            </h3>
+            <div class="faq-panel hidden pb-5 -mt-1 text-ink-700 leading-relaxed">
+              Yes. We rebuild your workflows step for step, with the same triggers, the same actions, and the same reliability. Your team won't notice a difference, except the monthly bill.
+            </div>
+          </div>
+          <!-- FAQ item -->
+          <div class="faq-item">
+            <h3>
+              <button type="button" class="faq-trigger w-full flex items-center justify-between gap-4 py-5 text-left" aria-expanded="false">
+                <span class="text-lg font-semibold text-ink-900">How long does migration take?</span>
+                <svg class="faq-icon h-5 w-5 text-ink-500 shrink-0 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+              </button>
+            </h3>
+            <div class="faq-panel hidden pb-5 -mt-1 text-ink-700 leading-relaxed">
+              Most migrations take anywhere from a few days to a couple of weeks, depending on how many Zaps you have and how complex they are. We'll give you a clear timeline after your free audit.
+            </div>
+          </div>
+          <!-- FAQ item -->
+          <div class="faq-item">
+            <h3>
+              <button type="button" class="faq-trigger w-full flex items-center justify-between gap-4 py-5 text-left" aria-expanded="false">
+                <span class="text-lg font-semibold text-ink-900">What if I need changes after the build?</span>
+                <svg class="faq-icon h-5 w-5 text-ink-500 shrink-0 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+              </button>
+            </h3>
+            <div class="faq-panel hidden pb-5 -mt-1 text-ink-700 leading-relaxed">
+              We offer affordable support and change options. And because you fully own your workflows, any developer can edit them, you're never locked in to us or anyone else.
+            </div>
+          </div>
+          <!-- FAQ item -->
+          <div class="faq-item">
+            <h3>
+              <button type="button" class="faq-trigger w-full flex items-center justify-between gap-4 py-5 text-left" aria-expanded="false">
+                <span class="text-lg font-semibold text-ink-900">Is this really free to run after migration?</span>
+                <svg class="faq-icon h-5 w-5 text-ink-500 shrink-0 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+              </button>
+            </h3>
+            <div class="faq-panel hidden pb-5 -mt-1 text-ink-700 leading-relaxed">
+              No task fees ever. To be fully transparent: if you self-host, there may be a minimal hosting cost, often just a few dollars a month, or free on your existing infrastructure. Either way, you eliminate the per-task charges that make Zapier so expensive as you grow.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================= -->
+  <!-- PHONE VERIFICATION MODAL (Twilio OTP via the VOAI worker)     -->
+  <!-- ============================================================= -->
+  <div id="verifyModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-ink-900/60 backdrop-blur-sm">
+    <div role="dialog" aria-modal="true" aria-labelledby="verifyModalTitle" class="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl text-center">
+      <h3 id="verifyModalTitle" class="text-xl font-extrabold text-ink-900">Verify your phone</h3>
+      <p id="verifySub" class="mt-1 text-sm text-ink-700">Sending a code…</p>
+
+      <input id="verifyCode" type="text" inputmode="numeric" maxlength="10" autocomplete="one-time-code" placeholder="• • • • • •"
+        class="mt-5 w-full rounded-lg border border-ink-200 px-3.5 py-3 text-center text-2xl font-bold tracking-[0.3em] text-ink-900 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/30" />
+      <p id="verifyStatus" class="mt-2 text-sm hidden"></p>
+
+      <button type="button" id="verifyConfirm"
+        class="mt-5 w-full inline-flex items-center justify-center rounded-xl bg-brand-600 px-6 py-3.5 text-base font-bold text-white shadow-md hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-600 transition-colors">
+        Verify
+      </button>
+
+      <div class="mt-4 flex items-center justify-between text-sm">
+        <button type="button" id="verifyChange" class="font-semibold text-brand-600 hover:text-brand-700">Change number</button>
+        <button type="button" id="verifyResend" class="font-semibold text-brand-600 hover:text-brand-700">Resend code</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- 11. FOOTER                                                    -->
+  <!-- ============================================================= -->
+  <footer class="bg-ink-900 text-ink-200 py-12">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div class="text-center sm:text-left">
+          <!-- Logo on a white pill so the dark-blue wordmark stays legible on the dark footer -->
+          <div class="inline-flex items-center rounded-xl bg-white px-3 py-2 shadow-sm">
+            <img src="https://vibe.filesafe.space/1776385047214871557/assets/9b043093-42b8-44a8-a402-a4917fded9e5.png"
+                 alt="Virtual Office AI" width="500" height="100"
+                 class="h-7 w-auto" />
+          </div>
+          <p class="mt-3 text-sm text-ink-500">Migrate off Zapier. Own your automations. Pay once.</p>
+        </div>
+        <nav class="flex items-center gap-6 text-sm" aria-label="Footer">
+          <!-- Placeholder links -->
+          <a href="privacy.html" class="hover:text-white transition-colors">Privacy</a>
+          <a href="terms.html" class="hover:text-white transition-colors">Terms</a>
+          <a href="mailto:info@virtualofficecrm.com" class="hover:text-white transition-colors">Contact</a>
+        </nav>
+      </div>
+      <p class="mt-8 text-center sm:text-left text-sm text-ink-500">&copy; <span id="year">2026</span> Virtual Office AI. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- ============================================================= -->
+  <!-- SCRIPTS — all vanilla JS, inline                              -->
+  <!-- ============================================================= -->
+  <script>
+  (function () {
+    'use strict';
+
+    /* ---------- Footer year ---------- */
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    /* ---------- Ad attribution: copy URL params into the hidden form fields ---------- */
+    (function captureAttribution() {
+      var params = new URLSearchParams(window.location.search);
+      ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid'].forEach(function (key) {
+        var val = params.get(key);
+        var el = document.getElementById(key);
+        if (val && el) { el.value = val; }
+      });
+    })();
+
+    /* ---------- Sticky nav shadow on scroll ---------- */
+    var nav = document.getElementById('nav');
+    function onScroll() {
+      if (window.scrollY > 8) {
+        nav.classList.add('shadow-md');
+      } else {
+        nav.classList.remove('shadow-md');
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    /* ---------- Smooth scroll for in-page anchors ----------
+       (CSS scroll-smooth handles most of it; this normalizes focus + offset.) */
+    document.querySelectorAll('a[href^="#"]').forEach(function (link) {
+      link.addEventListener('click', function (e) {
+        var targetId = link.getAttribute('href');
+        if (targetId === '#' || targetId === '#top') {
+          e.preventDefault();
+          window.scrollTo({ top: 0, behavior: prefersReduced() ? 'auto' : 'smooth' });
+          return;
+        }
+        var target = document.querySelector(targetId);
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: prefersReduced() ? 'auto' : 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    function prefersReduced() {
+      return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    }
+
+    /* ---------- Section reveal on scroll (IntersectionObserver) ---------- */
+    var reveals = document.querySelectorAll('.reveal');
+    if (prefersReduced() || !('IntersectionObserver' in window)) {
+      reveals.forEach(function (el) { el.classList.add('is-visible'); });
+    } else {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+      reveals.forEach(function (el) { io.observe(el); });
+    }
+
+    /* ============================================================= */
+    /* SAVINGS CALCULATOR                                            */
+    /* ============================================================= */
+    var range = document.getElementById('spendRange');
+    var zapsRange = document.getElementById('zapsRange');
+    var spendDisplay = document.getElementById('spendDisplay');
+    var zapsDisplay = document.getElementById('zapsDisplay');
+    var outMonthly = document.getElementById('outMonthly');
+    var outYearly = document.getElementById('outYearly');
+    var outFee = document.getElementById('outFee');
+    var outSave1 = document.getElementById('outSave1');
+    var outSave3 = document.getElementById('outSave3');
+
+    // USD formatter with commas, no cents.
+    var usd = new Intl.NumberFormat('en-US', {
+      style: 'currency', currency: 'USD', maximumFractionDigits: 0
+    });
+
+    /* ---- PRICING / CALCULATOR FORMULA ----
+       Base fee covers the first 2 Zaps; each additional Zap adds $300.
+       fee = BASE_FEE + max(0, zaps - INCLUDED_ZAPS) * PER_ZAP_FEE */
+    var BASE_FEE = 1500;       // covers the first 2 Zaps
+    var INCLUDED_ZAPS = 2;     // Zaps included in the base fee
+    var PER_ZAP_FEE = 300;     // cost per additional Zap
+    function estimateMigrationFee(zaps) {
+      var extra = Math.max(0, zaps - INCLUDED_ZAPS);
+      return BASE_FEE + extra * PER_ZAP_FEE;
+    }
+
+    // Paint a range slider's fill track.
+    function paintRange(el) {
+      var pct = ((el.value - el.min) / (el.max - el.min)) * 100;
+      el.style.background = 'linear-gradient(to right, #059669 ' + pct + '%, #e2e8f0 ' + pct + '%)';
+    }
+
+    function updateCalculator() {
+      var monthly = parseInt(range.value, 10) || 0;
+      var zaps = parseInt(zapsRange.value, 10) || 0;
+      var yearly = monthly * 12;
+      var fee = estimateMigrationFee(zaps);
+      var save1 = yearly - fee;          // year-one savings (can be negative at low spend / many zaps)
+      var save3 = (yearly * 3) - fee;    // three-year savings
+
+      spendDisplay.textContent = usd.format(monthly);
+      zapsDisplay.textContent = zaps >= 50 ? '50+' : String(zaps);
+      outMonthly.textContent = usd.format(monthly);
+      outYearly.textContent = usd.format(yearly);
+      outFee.textContent = usd.format(fee);
+      outSave1.textContent = usd.format(save1);
+      outSave3.textContent = usd.format(save3);
+
+      paintRange(range);
+      paintRange(zapsRange);
+    }
+
+    if (range && zapsRange) {
+      range.addEventListener('input', updateCalculator);
+      zapsRange.addEventListener('input', updateCalculator);
+      updateCalculator(); // initialize on load
+    }
+
+    /* ============================================================= */
+    /* FAQ ACCORDION (accessible)                                    */
+    /* ============================================================= */
+    document.querySelectorAll('.faq-trigger').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var expanded = btn.getAttribute('aria-expanded') === 'true';
+        var panel = btn.parentElement.parentElement.querySelector('.faq-panel');
+        var icon = btn.querySelector('.faq-icon');
+        btn.setAttribute('aria-expanded', String(!expanded));
+        if (expanded) {
+          panel.classList.add('hidden');
+          icon.classList.remove('rotate-180');
+        } else {
+          panel.classList.remove('hidden');
+          icon.classList.add('rotate-180');
+        }
+      });
+    });
+
+    /* ============================================================= */
+    /* TWO-STEP FORM + VALIDATION                                    */
+    /* ============================================================= */
+    var form = document.getElementById('auditForm');
+    var formSuccess = document.getElementById('formSuccess');
+
+    /* ============================================================= */
+    /* PHONE VERIFICATION (Twilio OTP via the dedicated LP worker)    */
+    /* Endpoints: POST /otp/send + POST /otp/verify (see otp-worker.js). */
+    /* CORS on the worker is open (*).                                */
+    /* ============================================================= */
+    // Dedicated landing-page worker (deploy otp-worker.js via wrangler.jsonc).
+    var VERIFY_WORKER_URL = 'https://zapier.billowing-hall-c135.workers.dev';
+
+    var phoneEl        = document.getElementById('phone');
+    var phoneVerified  = document.getElementById('phoneVerified');
+    var verifyTokenEl  = document.getElementById('verifyToken');
+    var phoneVerifiedHint = document.getElementById('phoneVerifiedHint');
+
+    var verifyModal   = document.getElementById('verifyModal');
+    var verifySub     = document.getElementById('verifySub');
+    var verifyCode    = document.getElementById('verifyCode');
+    var verifyStatus  = document.getElementById('verifyStatus');
+    var verifyConfirm = document.getElementById('verifyConfirm');
+    var verifyChange  = document.getElementById('verifyChange');
+    var verifyResend  = document.getElementById('verifyResend');
+
+    // --- Turnstile token (single-use; the worker requires it on /otp/send) ---
+    var turnstileToken = '';
+    window.voTurnstileCb  = function (t) { turnstileToken = t || ''; };
+    window.voTurnstileErr = function () { turnstileToken = ''; };
+    function resetTurnstile() {
+      turnstileToken = '';
+      if (window.turnstile && window.turnstile.reset) {
+        try { window.turnstile.reset(); } catch (e) {}
+      }
+    }
+
+    function phoneDigits() { return (phoneEl.value || '').replace(/\D/g, ''); }
+    function phoneValid() {
+      var d = phoneDigits();
+      return d.length === 10 || (d.length === 11 && d[0] === '1');
+    }
+    function prettyPhone() {
+      var d = phoneDigits();
+      if (d.length === 11 && d[0] === '1') d = d.slice(1);
+      if (d.length === 10) return '(' + d.slice(0, 3) + ') ' + d.slice(3, 6) + '-' + d.slice(6);
+      return phoneEl.value;
+    }
+    function setVerifyStatus(text, kind) {
+      if (!text) { verifyStatus.classList.add('hidden'); return; }
+      verifyStatus.textContent = text;
+      verifyStatus.className = 'mt-2 text-sm font-semibold ' + (kind === 'err' ? 'text-warn-600' : kind === 'ok' ? 'text-brand-600' : 'text-ink-500');
+      verifyStatus.classList.remove('hidden');
+    }
+
+    // Editing the phone clears any prior verification.
+    phoneEl.addEventListener('input', function () {
+      phoneVerified.value = 'false';
+      verifyTokenEl.value = '';
+      phoneVerifiedHint.classList.add('hidden');
+    });
+
+    // POST /otp/send — texts a code to the number. Resolves true on success.
+    function sendCode() {
+      setVerifyStatus('');
+      verifySub.textContent = 'Sending a code to ' + prettyPhone() + '…';
+      return fetch(VERIFY_WORKER_URL + '/otp/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: phoneEl.value, turnstile_token: turnstileToken })
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          if (res && res.success) {
+            verifySub.textContent = 'Enter the code we texted to ' + prettyPhone() + '.';
+            return true;
+          }
+          throw new Error((res && res.error) || 'Could not send code');
+        })
+        .catch(function (err) {
+          verifySub.textContent = "We couldn't text " + prettyPhone() + '.';
+          setVerifyStatus(err.message, 'err');
+          return false;
+        })
+        .finally(function () {
+          resetTurnstile(); // Turnstile tokens are single-use
+        });
+    }
+
+    function openVerifyModal() {
+      verifyCode.value = '';
+      setVerifyStatus('');
+      verifyConfirm.disabled = false;
+      verifyConfirm.textContent = 'Verify';
+      verifyModal.classList.remove('hidden');
+      sendCode().then(function () { verifyCode.focus(); });
+    }
+    function closeVerifyModal() { verifyModal.classList.add('hidden'); }
+
+    verifyChange.addEventListener('click', function () {
+      closeVerifyModal();
+      phoneEl.focus();
+      if (phoneEl.select) phoneEl.select();
+    });
+
+    verifyResend.addEventListener('click', function () {
+      verifyResend.disabled = true;
+      setVerifyStatus('Resending…', 'info');
+      sendCode().then(function (ok) {
+        verifyResend.disabled = false;
+        if (ok) setVerifyStatus('New code sent.', 'ok');
+      });
+    });
+
+    // POST /otp/verify — on success store the signed token and complete the submission.
+    verifyConfirm.addEventListener('click', function () {
+      var code = (verifyCode.value || '').replace(/\D/g, '');
+      if (code.length < 4) { setVerifyStatus('Enter the code we texted you.', 'err'); return; }
+      verifyConfirm.disabled = true;
+      verifyConfirm.textContent = 'Verifying…';
+      setVerifyStatus('');
+
+      fetch(VERIFY_WORKER_URL + '/otp/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: phoneEl.value, code: code })
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          if (!res || !res.verified) throw new Error((res && res.error) || 'Invalid or expired code');
+          phoneVerified.value = 'true';
+          verifyTokenEl.value = res.token || ''; // signed proof, sent with the lead
+          phoneVerifiedHint.classList.remove('hidden');
+          closeVerifyModal();
+          completeSubmission(); // verified — finalize and show the booking calendar
+        })
+        .catch(function (err) {
+          setVerifyStatus(err.message, 'err');
+          verifyConfirm.disabled = false;
+          verifyConfirm.textContent = 'Verify';
+        });
+    });
+
+    // --- Validation helpers ---
+    function showError(field, message) {
+      var msgEl = document.querySelector('[data-error-for="' + field.id + '"]');
+      field.classList.add('border-warn-500', 'ring-2', 'ring-warn-500/30');
+      field.classList.remove('border-ink-200');
+      if (msgEl) { msgEl.textContent = message; msgEl.classList.remove('hidden'); }
+    }
+    function clearError(field) {
+      var msgEl = document.querySelector('[data-error-for="' + field.id + '"]');
+      field.classList.remove('border-warn-500', 'ring-2', 'ring-warn-500/30');
+      field.classList.add('border-ink-200');
+      if (msgEl) { msgEl.classList.add('hidden'); }
+    }
+    function isValidEmail(v) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+    }
+    function isValidUrl(v) {
+      if (!v) return true; // optional
+      try { new URL(v.match(/^https?:\/\//) ? v : 'https://' + v); return true; }
+      catch (e) { return false; }
+    }
+
+    // Validate the whole form. Required: first/last name, email, phone, spend, apps.
+    // Returns true if valid.
+    function validateForm() {
+      var ok = true;
+      var firstName = document.getElementById('firstName');
+      var lastName = document.getElementById('lastName');
+      var email = document.getElementById('email');
+      var phone = document.getElementById('phone');
+      var spend = document.getElementById('zapierSpend');
+      var apps = document.getElementById('apps');
+      var consent = document.getElementById('consent');
+
+      if (!firstName.value.trim()) { showError(firstName, 'Please enter your first name.'); ok = false; } else { clearError(firstName); }
+      if (!lastName.value.trim()) { showError(lastName, 'Please enter your last name.'); ok = false; } else { clearError(lastName); }
+      if (!email.value.trim()) { showError(email, 'Please enter your email.'); ok = false; }
+      else if (!isValidEmail(email.value.trim())) { showError(email, 'Please enter a valid email address.'); ok = false; }
+      else { clearError(email); }
+      if (!phone.value.trim()) { showError(phone, 'Please enter your phone number.'); ok = false; }
+      else if (!phoneValid()) { showError(phone, 'Please enter a valid US phone number.'); ok = false; }
+      else { clearError(phone); }
+      if (!spend.value) { showError(spend, 'Please select an option.'); ok = false; } else { clearError(spend); }
+      if (!apps.value.trim()) { showError(apps, 'Please list the apps you connect.'); ok = false; } else { clearError(apps); }
+      if (!consent.checked) { showError(consent, 'Please agree to be contacted so we can send your audit.'); ok = false; } else { clearError(consent); }
+
+      return ok;
+    }
+
+    // Clear errors as the user fixes fields.
+    form.querySelectorAll('input, select').forEach(function (el) {
+      el.addEventListener('input', function () { clearError(el); });
+      el.addEventListener('change', function () { clearError(el); });
+    });
+
+    // Leads spending under this threshold aren't a fit (migration won't pay off).
+    var DISQUALIFY_SPEND = 'Under $100 / month';
+
+    // Every lead (qualified or not) is sent to the worker's /lead endpoint, which
+    // forwards it to the CRM server-side (keeps the the CRM webhook URL out of page source).
+    var LEAD_WEBHOOK_URL = VERIFY_WORKER_URL + '/lead';
+
+    // Assemble the full lead payload. `qualified` is "Yes" or "No".
+    function buildPayload(qualified) {
+      return {
+        firstName:     document.getElementById('firstName').value.trim(),
+        lastName:      document.getElementById('lastName').value.trim(),
+        email:         document.getElementById('email').value.trim(),
+        phone:         document.getElementById('phone').value.trim(),
+        zapierSpend:   document.getElementById('zapierSpend').value,
+        apps:          document.getElementById('apps').value.trim(),
+        consent:       document.getElementById('consent').checked ? 'Yes' : 'No', // required checkbox
+        qualified:     qualified,                                   // "Yes" / "No"
+        leadStatus:    qualified === 'Yes' ? 'Qualified' : 'Not Qualified - Under $100/mo',
+        phoneVerified: phoneVerified.value,           // "true" once SMS-verified (disqualified = "false")
+        verifyToken:   verifyTokenEl.value,           // signed proof from /otp/verify ("" if not verified)
+        // Ad attribution (auto-captured from the URL on page load)
+        utm_source:   document.getElementById('utm_source').value,
+        utm_medium:   document.getElementById('utm_medium').value,
+        utm_campaign: document.getElementById('utm_campaign').value,
+        utm_content:  document.getElementById('utm_content').value,
+        utm_term:     document.getElementById('utm_term').value,
+        fbclid:       document.getElementById('fbclid').value,
+        submittedAt:  crmDate(new Date())   // MM-DD-YYYY — format the CRM date-picker fields accept directly
+      };
+    }
+
+    // Format a date as MM-DD-YYYY for the CRM's "Data Submitted" date-picker field.
+    function crmDate(dt) {
+      var mm = String(dt.getMonth() + 1).padStart(2, '0');
+      var dd = String(dt.getDate()).padStart(2, '0');
+      return mm + '-' + dd + '-' + dt.getFullYear();
+    }
+
+    // Fire the lead to the the CRM webhook (fire-and-forget; never blocks the UI).
+    function postLead(payload) {
+      fetch(LEAD_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).catch(function (err) { console.error('Lead webhook failed:', err); });
+    }
+
+    // Submit: validate → qualify → verify phone by SMS (if needed) → finalize.
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!validateForm()) { return; }
+
+      // Low-spend leads: capture them as NOT qualified, skip SMS + booking.
+      if (document.getElementById('zapierSpend').value === DISQUALIFY_SPEND) {
+        postLead(buildPayload('No'));   // still tracked in the CRM, flagged not qualified
+        form.classList.add('hidden');
+        document.getElementById('formDisqualified').classList.remove('hidden');
+        document.getElementById('formDisqualified').scrollIntoView({ behavior: prefersReduced() ? 'auto' : 'smooth', block: 'start' });
+        return;
+      }
+
+      // Qualified leads: phone verified already? Finish now. Otherwise verify by SMS
+      // first; completeSubmission() runs once the code is confirmed.
+      if (phoneVerified.value === 'true') {
+        completeSubmission();
+      } else {
+        openVerifyModal();
+      }
+    });
+
+    // Qualified lead: send to the CRM and show the prefilled booking calendar.
+    function completeSubmission() {
+      var payload = buildPayload('Yes');
+      postLead(payload);
+
+      // Show success state + the prefilled booking calendar.
+      form.classList.add('hidden');
+      formSuccess.classList.remove('hidden');
+      renderBookingWidget(payload);
+      formSuccess.scrollIntoView({ behavior: prefersReduced() ? 'auto' : 'smooth', block: 'start' });
+    }
+
+    /* ============================================================= */
+    /* BOOKING WIDGET (prefilled from the captured lead)  */
+    /* ============================================================= */
+    // Virtual Office CRM calendar/booking widget id.
+    var BOOKING_WIDGET_ID = 'vrWiwjzRqPVAj8vuRB3S';
+    var BOOKING_BASE_URL = 'https://api.virtualofficecrm.com/widget/booking/' + BOOKING_WIDGET_ID;
+
+    function renderBookingWidget(data) {
+      var container = document.getElementById('bookingContainer');
+      if (!container || container.dataset.rendered === 'true') return;
+
+      // Phone in E.164 (+1XXXXXXXXXX) for the cleanest the CRM prefill.
+      var e164 = data.phone;
+      var d = (data.phone || '').replace(/\D/g, '');
+      if (d.length === 10) e164 = '+1' + d;
+      else if (d.length === 11 && d[0] === '1') e164 = '+' + d;
+
+      // Prefill the the CRM booking widget via URL query params.
+      // NOTE: the CRM reads these to pre-fill the contact step. Param names can vary
+      // by widget version — verify in a live test and tweak the keys if a field
+      // doesn't populate (common alternates: firstName/lastName).
+      var params = new URLSearchParams({
+        first_name: data.firstName || '',
+        last_name:  data.lastName || '',
+        email:      data.email || '',
+        phone:      e164 || ''
+      });
+
+      var iframe = document.createElement('iframe');
+      iframe.src = BOOKING_BASE_URL + '?' + params.toString();
+      iframe.id = BOOKING_WIDGET_ID + '_' + Date.now();
+      iframe.setAttribute('scrolling', 'no');
+      iframe.style.width = '100%';
+      iframe.style.border = 'none';
+      iframe.style.overflow = 'hidden';
+      iframe.style.minHeight = '200px'; // low floor; the CRM's embed script auto-sizes it up for the date step
+      container.appendChild(iframe);
+      container.dataset.rendered = 'true';
+
+      // Load the CRM's embed script once — it auto-resizes the iframe to fit content.
+      if (!document.getElementById('vo-booking-embed')) {
+        var s = document.createElement('script');
+        s.id = 'vo-booking-embed';
+        s.src = 'https://api.virtualofficecrm.com/js/form_embed.js';
+        s.type = 'text/javascript';
+        document.body.appendChild(s);
+      }
+    }
+
+  })();
+  </script>
+</body>
+</html>
